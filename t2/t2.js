@@ -837,9 +837,5 @@ restaurants.forEach((restaurant) => {
 })
 
 
-navigator.platform
-
-
-
 
 
