@@ -1,11 +1,16 @@
 
-const fetchRestaurants = async () => {
-  const restaurantResult = await fetch("https://10.120.32.94/restaurant/api/v1/restaurants")
+const makeFetch = async (url) => {
+  const result = await fetch(url)
 
-  const restaurants = await restaurantResult.json()
-
-  return restaurants
+  return await result.json()
 }
+
+const fetchRestaurants = async () =>
+  await makeFetch("https://10.120.32.94/restaurant/api/v1/restaurants")
+
+const fetchDailyMenu = async (id) =>
+  makeFetch(`https://10.120.32.94/restaurant/api/v1/restaurants/daily/${id}/fi`)
+
 
 const sortRestaurants = (restaurants) => {
   restaurants.sort((a, b) =>
@@ -22,7 +27,7 @@ const createPhoneLink = (phone) => {
   return `<a href="tel:${cleanedNumber}">${cleanedNumber}</a>`
 }
 
-const createDialog = (restaurant, dialogNode) => {
+const createDialog = (restaurant, dialogNode, menu) => {
   // ternary operator
   const phone = restaurant.phone !== "-" ? createPhoneLink(restaurant.phone) : ""
 
@@ -33,6 +38,10 @@ const createDialog = (restaurant, dialogNode) => {
 
     <p><a href="mailto:juha.tauriainen@metropolia.fi">laita mailia</a></p>
 
+    <ul>
+    ${menu.courses.map(({name, price, diets}) => `<li>${name} - ${price} (${diets.join(", ")})</li>`).join("")}
+    </ul>
+
     <form method="dialog">
       <button>Sulje</button>
     </form>
@@ -41,14 +50,17 @@ const createDialog = (restaurant, dialogNode) => {
   dialogNode.showModal()
 }
 
-const handleTableRowClick = (tr, restaurant, dialogNode) => {
+const handleTableRowClick = async (tr, restaurant, dialogNode) => {
   document.querySelectorAll("tr").forEach((tr) => {
     tr.classList.remove("highlight")
   })
 
   tr.classList.add("highlight")
 
-  createDialog(restaurant, dialogNode)
+  const menu = await fetchDailyMenu(restaurant._id)
+  console.log("menu", menu)
+
+  createDialog(restaurant, dialogNode, menu)
 }
 
 const createTable = (restaurants) => {
@@ -67,7 +79,6 @@ const createTable = (restaurants) => {
 }
 
 const buildWebsite = async () => {
-  // const singleRestaurant =  await fetch("https://10.120.32.94/restaurant/api/v1/restaurants/daily/6470d38ecb12107db6fe24c1/fi")
 
   const restaurants = await fetchRestaurants()
   sortRestaurants(restaurants)

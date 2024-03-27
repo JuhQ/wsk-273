@@ -50,6 +50,10 @@ dialog {
     float: right;
     cursor: pointer;
   }
+
+  ul {
+    list-style: circle;
+  }
 }
 
 
