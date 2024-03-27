@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajax kokeilu</title>
+
+  <script nonce="">
+    const fetchData = async (url, options) => {
+      const result = await fetch(url, options)
+
+      if (result.status < 200 || result.status > 299) {
+        throw new Error("haku ei onnistunut")
+      }
+
+      return await result.json()
+    }
+
+    const runTheThing = async () => {
+      try {
+        const user = {
+          name: 'John Doe',
+          job: 'Developer',
+          school: "metropolia",
+          asdf: 1234,
+          metodi: () => "1234"
+        };
+        const url = 'https://reqres.in/api/users';
+        const options = {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(user)
+        }
+        const userData = await fetchData(url, options)
+
+        console.log("userData", userData);
+      } catch (error) {
+        console.error('An error occurred:', error);
+      }
+    }
+
+    runTheThing()
+
+  </script>
+</head>
+
+<body>
+
+</body>
+
+</html>
